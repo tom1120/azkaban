@@ -166,7 +166,8 @@ public class AvroFileViewer extends HdfsFileViewer {
       g = new JsonFactory().createJsonGenerator(
           outputStream, JsonEncoding.UTF8);
       g.useDefaultPrettyPrinter();
-      Encoder encoder = EncoderFactory.get().jsonEncoder(schema, g);
+//      Encoder encoder = EncoderFactory.get().jsonEncoder(schema, g);
+      Encoder encoder = EncoderFactory.get().jsonEncoder(schema, outputStream);
 
       long endTime = System.currentTimeMillis() + STOP_TIME;
       int lineno = 1; // line number starts from 1

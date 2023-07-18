@@ -53,7 +53,8 @@ public class ORCFileViewer extends HdfsFileViewer {
         try {
             // no need to close orcreader
             orcReader = OrcFile.createReader(fs, path);
-            recordReader = orcReader.rows(null);
+//            recordReader = orcReader.rows(null);
+            recordReader = orcReader.rows();
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.debug(path.toUri().getPath() + " is not a ORC file.");
@@ -96,7 +97,8 @@ public class ORCFileViewer extends HdfsFileViewer {
             int lineNum = 1;
 
             orcreader = OrcFile.createReader(fs, path);
-            reader = orcreader.rows(null);
+//            reader = orcreader.rows(null);
+            reader = orcreader.rows();
             long endTime = System.currentTimeMillis() + STOP_TIME;
             while (reader.hasNext() && lineNum <= endLine
                 && System.currentTimeMillis() <= endTime) {

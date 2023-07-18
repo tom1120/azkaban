@@ -121,7 +121,8 @@ public class ParquetFileViewer extends HdfsFileViewer {
         if (avroWriter == null) {
           Schema schema = record.getSchema();
           avroWriter = new GenericDatumWriter<GenericRecord>(schema);
-          encoder = EncoderFactory.get().jsonEncoder(schema, json);
+//          encoder = EncoderFactory.get().jsonEncoder(schema, json);
+          encoder = EncoderFactory.get().jsonEncoder(schema, outputStream);
         }
 
         if (line >= startLine) {

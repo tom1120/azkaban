@@ -13,11 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
+
+
 buildscript {
   repositories {
     mavenCentral()
     maven {
-      url 'https://plugins.gradle.org/m2/'
+//      url 'https://plugins.gradle.org/m2/'
+      url "http://maven.aliyun.com/nexus/content/groups/public/"
     }
   }
   dependencies {
@@ -58,19 +62,21 @@ allprojects {
 //  need this for rest.li/pegasus 28.* artifacts until they are in Maven Central:
     maven {
       url 'https://linkedin.jfrog.io/artifactory/open-source/'
+//      url "http://maven.aliyun.com/nexus/content/groups/public/"
     }
   }
 }
 
-ext.versions = [hadoop: '2.10.0',
-                hive  : '1.1.0',
-                pig   : '0.11.0',
+ext.versions = [hadoop: '3.1.4',
+                hive  : '3.1.0',
+                pig   : '0.16.0',
                 restli: '29.16.0',
                 slf4j : '1.7.18',]
 
 ext.deps = [
     // External dependencies
     // restli 1.* had this one included transitively. restli 28.* doesn't. But we still need it:
+    avroTools  : 'org.apache.avro:avro-tools:1.9.2',
     json                 : 'org.json:json:20170516',
     assertj              : 'org.assertj:assertj-core:3.8.0',
     awaitility           : 'org.awaitility:awaitility:3.0.0',
@@ -89,7 +95,8 @@ ext.deps = [
     hadoopAnnotations    : "org.apache.hadoop:hadoop-annotations:" + versions.hadoop,
     hadoopAuth           : "org.apache.hadoop:hadoop-auth:" + versions.hadoop,
     hadoopCommon         : "org.apache.hadoop:hadoop-common:" + versions.hadoop,
-    hadoopHdfs           : "org.apache.hadoop:hadoop-hdfs:" + versions.hadoop,
+//    hadoopHdfs           : "org.apache.hadoop:hadoop-hdfs:" + versions.hadoop,
+    hadoopHdfs           : "org.apache.hadoop:hadoop-hdfs-client:" + versions.hadoop,
     hadoopMRClientCommon : "org.apache.hadoop:hadoop-mapreduce-client-common:" + versions.hadoop,
     hadoopMRClientCore   : "org.apache.hadoop:hadoop-mapreduce-client-core:" + versions.hadoop,
     hiveCli              : "org.apache.hive:hive-cli:" + versions.hive,

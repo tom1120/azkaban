@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceOper;
 import org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.plans.MROperPlan;
 import org.apache.pig.impl.plan.OperatorKey;
+import org.apache.pig.impl.plan.OperatorPlan;
 import org.apache.pig.tools.pigstats.JobStats;
 import org.apache.pig.tools.pigstats.OutputStats;
 import org.apache.pig.tools.pigstats.PigProgressNotificationListener;
@@ -44,6 +45,7 @@ import azkaban.jobtype.pig.PigJobDagNode;
 import azkaban.jobtype.pig.PigJobStats;
 import azkaban.utils.JSONUtils;
 import azkaban.utils.Props;
+import org.apache.pig.tools.pigstats.mapreduce.MRScriptState;
 
 
 /**
@@ -65,17 +67,28 @@ public class AzkabanPigListener implements PigProgressNotificationListener {
   }
 
   @Override
-  public void initialPlanNotification(String scriptId, MROperPlan plan) {
+//  public void initialPlanNotification(String scriptId, MROperPlan plan) {
+  public void initialPlanNotification(String scriptId, OperatorPlan<?> plan) {
     logger.info("**********initialPlanNotification!**********");
+    OperatorPlan<MapReduceOper> mrPlan;
+    try {
+      mrPlan = (OperatorPlan<MapReduceOper>) plan;
+    } catch (Exception e) {
+      logger.error(String.format("Failed to cast OperatorPlan: %s", plan), e);
+      return;
+    }
 
     // First pass: generate dagNodeNameMap.
-    Map<OperatorKey, MapReduceOper> planKeys = plan.getKeys();
+//    Map<OperatorKey, MapReduceOper> planKeys = plan.getKeys();
+    Map<OperatorKey, MapReduceOper> planKeys = mrPlan.getKeys();
     for (Map.Entry<OperatorKey, MapReduceOper> entry : planKeys.entrySet()) {
       String nodeName = entry.getKey().toString();
       String[] aliases =
-          toArray(ScriptState.get().getAlias(entry.getValue()).trim());
+//          toArray(ScriptState.get().getAlias(entry.getValue()).trim());
+          toArray(MRScriptState.get().getAlias(entry.getValue()).trim());
       String[] features =
-          toArray(ScriptState.get().getPigFeature(entry.getValue()).trim());
+//          toArray(ScriptState.get().getPigFeature(entry.getValue()).trim());
+          toArray(MRScriptState.get().getPigFeature(entry.getValue()).trim());
 
       PigJobDagNode node = new PigJobDagNode(nodeName, aliases, features);
       this.dagNodeNameMap.put(node.getName(), node);
@@ -92,7 +105,8 @@ public class AzkabanPigListener implements PigProgressNotificationListener {
     for (Map.Entry<OperatorKey, MapReduceOper> entry : planKeys.entrySet()) {
       PigJobDagNode node = this.dagNodeNameMap.get(entry.getKey().toString());
       List<String> successorNodeList = new ArrayList<String>();
-      List<MapReduceOper> successors = plan.getSuccessors(entry.getValue());
+//      List<MapReduceOper> successors = plan.getSuccessors(entry.getValue());
+      List<MapReduceOper> successors = mrPlan.getSuccessors(entry.getValue());
       if (successors != null) {
         for (MapReduceOper successor : successors) {
           PigJobDagNode successorNode =
@@ -251,6 +265,8 @@ public class AzkabanPigListener implements PigProgressNotificationListener {
     logger.info("The script id is " + arg0);
     logger.info("Finished " + arg1 + " jobs successfully");
   }
+
+
 
   @Override
   public void launchStartedNotification(String arg0, int arg1) {
